@@ -39,7 +39,10 @@ export const chatService = async (query, conversationalHistory) => {
         }
     ])
 
-    const context = results.slice(0,3).map((r)=> r.text).join("\n")
+    const context = results
+       .slice(0,3)
+       .map(r => `Source: ${r.source}\nText: ${r.text}`)
+       .join("\n\n")
 
     const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",

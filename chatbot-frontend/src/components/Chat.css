@@ -269,3 +269,141 @@ body {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* Right side auth buttons (Login / Register / Logout) */
+.auth-controls {
+  position: fixed;
+  top: 25px;
+  right: 8%;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.auth-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.25s ease-in-out;
+}
+
+.auth-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #00c2d1, #009fb1);
+}
+
+/* ===== AUTH MODAL OVERLAY ===== */
+.auth-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.auth-modal-content {
+  position: relative;
+  z-index: 2001;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ===== AUTH CARD ===== */
+.auth-card {
+  background: #222831;
+  padding: 25px 30px;
+  border-radius: 12px;
+  color: #eeeeee;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 16px;
+  color: #00ADB5;
+  letter-spacing: 1px;
+}
+
+/* ===== INPUTS ===== */
+.auth-card input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #31363F;
+  border: 1px solid #444;
+  color: #eee;
+  font-size: 15px;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #00ADB5;
+  box-shadow: 0 0 5px rgba(0, 173, 181, 0.4);
+}
+
+/* ===== BUTTONS ===== */
+.auth-card button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.auth-card button:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #00c2d1, #009fb1);
+}
+
+/* ===== SWITCH LINK ===== */
+.auth-card .link-btn {
+  display: block;
+  background: transparent;
+  border: none;
+  color: #89cfff;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.auth-card .link-btn:hover {
+  text-decoration: underline;
+}
+
+/* ===== ERROR MESSAGE ===== */
+.auth-card .error {
+  color: #ff6b6b;
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
