@@ -1,0 +1,58 @@
+.conversation-list-container {
+  position: fixed;
+  left: 0;
+  top: 100;
+  bottom: 0;
+  width: 240px;
+  background: #191e29;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  z-index: 900;
+}
+
+.new-chat-btn {
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: all 0.25s ease-in-out;
+}
+
+.new-chat-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #00c2d1, #009fb1);
+}
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conversation-item {
+  padding: 10px 12px;
+  background: #222831;
+  color: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.conversation-item:hover {
+  background: #00ADB5;
+  color: #222831;
+}
+
+.conversation-item.active {
+  background: #00ADB5;
+  color: #222831;
+  font-weight: bold;
+}
+

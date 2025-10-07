@@ -21,6 +21,11 @@ body {
   position: relative; /* for absolute children */
   background: #222831;
   overflow: hidden;
+  display: flex;
+}
+.chat-main {
+  flex: 1;
+  position: relative;
 }
 
 /* ================== Full-page Greeting ================== */
@@ -407,3 +412,80 @@ body {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: -300px; /* hidden by default */
+  top: 0;
+  width: 300px;
+  height: 100vh;
+  background: #222831;
+  z-index: 1500;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+}
+
+/* Show sidebar */
+.sidebar.show {
+  left: 0;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 25px;
+  left: 10px;
+  z-index: 1600;
+  padding: 10px 15px;
+  font-size: 20px;
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+/* Sidebar container */
+.conversation-sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px; /* hidden initially */
+  width: 240px;
+  height: 100vh;
+  background: #222831;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+/* When visible */
+.conversation-sidebar.visible {
+  left: 0;
+}
+
+/* Toggle button */
+.sidebar-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 0;  /* stays on the left edge of the screen */
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  transition: left 0.3s ease;
+}
+
+.conversation-sidebar.visible + .sidebar-toggle {
+  left: 240px; /* same as sidebar width */
+}

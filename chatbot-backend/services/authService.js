@@ -3,7 +3,7 @@ dotenv.config()
 
 import User from "../models/User.js"
 import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+import { generateToken } from "../helpers/jwtHelper.js";
 
 export const registerService = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -19,8 +19,9 @@ export const loginService = async ({ email, password })=> {
         const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch) throw new Error ("Invalid password")
 
-            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d"})
-            return { username: user.username, message: "Login successful",token }
-}
+            const token = generateToken(user._id); 
+  return { username: user.username, message: "Login successful", token };
+};
+
 
 export default { registerService, loginService }
