@@ -1,24 +1,35 @@
 import Conversation from "../models/Conversation.js"
-
+import { generateTitleFromAI } from "./openaiService.js"; 
 
 export const saveConversationService = async (userId, conversationId, userMsg, botMsg) => {
   try {
     if (conversationId && typeof conversationId === "string" && conversationId.length === 24) {
-      await Conversation.findByIdAndUpdate(
-        conversationId,
-        { $push: { messages: [userMsg, botMsg] } },
-        { new: true }
-      );
+      const conv = await Conversation.findById(conversationId);
+
+      if (conv.messages.length === 0) {
+        const title = await generateTitleFromAI(userMsg.content);
+        conv.title = title || "New Chat";
+      }
+
+      conv.messages.push(userMsg, botMsg);
+      await conv.save();
+
+      return { id: conv._id, title: conv.title };
     } else {
       const newConversation = new Conversation({
         userId,
         messages: [userMsg, botMsg],
       });
+
+      const title = await generateTitleFromAI(userMsg.content);
+      newConversation.title = title || "New Chat";
+
       await newConversation.save();
-      return newConversation._id; 
+      return { id: newConversation._id, title: newConversation.title };
     }
   } catch (err) {
     console.error("Failed to save conversation:", err);
+    return { id: conversationId || null, title: "New Chat" };
   }
 };
 

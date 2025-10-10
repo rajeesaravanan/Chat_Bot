@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import AuthForm from "./AuthForm";
-import ConversationList from "./ConversationLists";
-import LogoutConfirmModal from "./logoutConfirmModal";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import AuthForm from "../Auth/AuthForm";
+import ConversationList from "../Sidebar/ConversationList";
+import LogoutConfirmModal from "../Modals/LogoutConfirmModal";
+import { sendMessageApi } from "../../api/chatApi";
+import { getConversations, newConversationApi, getConversationById } from "../../api/conversationApi";
 import "./Chat.css";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -17,14 +16,28 @@ const Chat = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentConversation, setCurrentConversation] = useState(null);
+  const [conversations, setConversations] = useState([]);
 
   const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
   useEffect(scrollToBottom, [messages]);
+
+  // fetchConversations memoized
+  const fetchConversations = useCallback(async () => {
+    if (!isLoggedIn) return;
+    const token = localStorage.getItem("token");
+    try {
+      const convs = await getConversations(token);
+      setConversations(convs);
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -35,8 +48,7 @@ const Chat = () => {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  // Send user message
-  const sendMessage = async () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
     if (!isChatStarted) setIsChatStarted(true);
 
@@ -49,29 +61,24 @@ const Chat = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        `${API_URL}/api/messages/chat`,
-        { query: input, conversationId: currentConversation?._id || null },
-        { headers: { Authorization: token ? `Bearer ${token}` : "" } }
-      );
+      const res = await sendMessageApi(input, currentConversation?._id, token);
 
-      // Replace loading message with AI answer
       setMessages(prev =>
         prev.map(msg =>
           msg.content === " ✨ AMI is typing..."
-            ? { role: "assistant", content: res.data.answer }
+            ? { role: "assistant", content: res.answer }
             : msg
         )
       );
 
-      // Update current conversation with ID and AI-generated title
-      if (res.data.conversationId && !currentConversation?._id) {
-        setCurrentConversation(prev => ({
-          ...(prev || {}),
-          _id: res.data.conversationId,
-          title: res.data.conversationTitle || "New Chat"
-        }));
-      }
+      if (res.conversationId) {
+  setCurrentConversation(prev => ({
+    ...(prev || {}),
+    _id: res.conversationId,
+    title: res.conversationTitle || (prev?.title || "New Chat")
+  }));
+  fetchConversations(); // refresh sidebar list
+}
 
     } catch (err) {
       setMessages(prev =>
@@ -84,80 +91,75 @@ const Chat = () => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !showAuth) sendMessage();
-  };
+  const handleKeyPress = (e) => { if (e.key === "Enter" && !showAuth) handleSendMessage(); };
+  const toggleSidebar = () => {
+  if (!isLoggedIn) {
+    setShowAuth(true);
+    return;
+  }
+  setShowSidebar(prev => !prev);
+};
 
-  // Toggle sidebar
-  const toggleSidebar = () => setShowSidebar(prev => !prev);
-
-  // New conversation
   const handleNewChat = async () => {
     if (!isLoggedIn) return;
-
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        `${API_URL}/api/conversations/newChat`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setCurrentConversation(res.data.conversation);
+      const conversation = await newConversationApi(token);
+      setCurrentConversation(conversation);
       setMessages([]);
       setIsChatStarted(false);
+      fetchConversations();
     } catch (err) {
-      console.error("Failed to create new chat:", err);
+      console.error(err);
     }
   };
 
-  // Select conversation
   const handleSelectConversation = async (conversation) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_URL}/api/conversations/${conversation._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const conv = await getConversationById(conversation._id, token);
       setCurrentConversation(conversation);
-      setMessages(res.data.conversation.messages || []);
-      setIsChatStarted(res.data.conversation.messages?.length > 0);
+      setMessages(conv.messages || []);
+      setIsChatStarted(conv.messages?.length > 0);
     } catch (err) {
-      console.error("Failed to load conversation:", err);
+      console.error(err);
     }
   };
 
-  // Logout
   const logout = () => setIsLogoutModalOpen(true);
   const confirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     setIsLoggedIn(false);
     setUsername("");
+
+     setMessages([]);
+  setInput("");
+  setIsChatStarted(false);
+  setCurrentConversation(null);
+
     setIsLogoutModalOpen(false);
   };
 
   return (
     <div className="chat-container">
-      {/* Conversation Sidebar */}
       <div className={`conversation-sidebar ${showSidebar ? "visible" : ""}`}>
         {isLoggedIn && showSidebar && (
           <ConversationList
             currentConversation={currentConversation}
             onSelectConversation={handleSelectConversation}
             onNewChat={handleNewChat}
+            conversations={conversations}
           />
         )}
       </div>
 
-      {/* Toggle button always visible */}
       <button className="sidebar-toggle" onClick={toggleSidebar}>
         {showSidebar ? "«" : "»"}
       </button>
 
-      {/* Header */}
       <div className="chat-header">
-        <div className="bot-name">
-          <span className="sparkle-text">AMI ✨</span>
-        </div>
+        <div className="bot-name">AMI ✨</div>
         <div className="auth-controls">
           {isLoggedIn ? (
             <button className="auth-btn" onClick={logout}>Logout</button>
@@ -167,20 +169,18 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Greeting */}
       <div className={`chat-greeting ${isChatStarted ? "hidden" : ""}`}>
-        {isLoggedIn && username
-          ? `Hello ${username}!! How can I help you?`
-          : "How can I help you?"}
+        {isLoggedIn && username ? `Hello ${username}!! How can I help you?` : "How can I help you?"}
       </div>
 
-      {/* Chat Box */}
       <div className="chat-box">
         <div className={`chat-messages ${isChatStarted ? "chat-active" : "chat-inactive"}`}>
           {messages.map((msg, i) => (
-            <div key={i} className={`chat-message ${msg.role}`}>
-              {msg.content}
-            </div>
+            <div 
+  key={i} 
+  className={`chat-message ${msg.role}`} 
+  dangerouslySetInnerHTML={{ __html: msg.content }} 
+></div>
           ))}
           <div ref={messagesEndRef} />
         </div>
@@ -193,28 +193,21 @@ const Chat = () => {
             onKeyPress={handleKeyPress}
             placeholder="Ask Ami..."
           />
-          <button onClick={sendMessage}>→</button>
+          <button onClick={handleSendMessage}>→</button>
         </div>
       </div>
 
-      {/* Auth Modal */}
       {showAuth && (
-        <div className="auth-modal">
-          <div className="auth-modal-backdrop" onClick={() => setShowAuth(false)} />
-          <div className="auth-modal-content">
-            <AuthForm
-              onLoginSuccess={() => {
-                setIsLoggedIn(true);
-                setUsername(localStorage.getItem("username") || "");
-                setShowAuth(false);
-              }}
-              onClose={() => setShowAuth(false)}
-            />
-          </div>
-        </div>
+        <AuthForm
+          onLoginSuccess={() => {
+            setIsLoggedIn(true);
+            setUsername(localStorage.getItem("username") || "");
+            setShowAuth(false);
+          }}
+          onClose={() => setShowAuth(false)}
+        />
       )}
 
-      {/* Logout Confirmation Modal */}
       <LogoutConfirmModal
         isOpen={isLogoutModalOpen}
         onConfirm={confirmLogout}

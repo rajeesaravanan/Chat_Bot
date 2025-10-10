@@ -1,0 +1,122 @@
+/* ===== Conversation List Main Container ===== */
+.conversation-list-container {
+  width: 260px;
+  height: 100vh;
+  background: #222831;
+  color: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+}
+
+/* ===== New Chat Button ===== */
+.new-chat-btn {
+  background: linear-gradient(135deg, #00adb5, #007d8f);
+  color: white;
+  border: none;
+  padding: 12px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+   margin-top: 100px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.new-chat-btn:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #03c4c8, #008a99);
+}
+
+/* ===== Conversation List ===== */
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+/* ===== Individual Conversation Item ===== */
+.conversation-item {
+  background: #393e46;
+  color: #eeeeee;
+  padding: 12px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  font-size: 15px;
+  word-break: break-word;
+}
+
+.conversation-item:hover {
+  background: #00adb5;
+  color: white;
+  transform: scale(1.02);
+}
+
+/* ===== Active Conversation Highlight ===== */
+.conversation-item.active {
+  background: #00adb5;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ===== Scrollbar Styling ===== */
+.conversation-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.conversation-list::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+}
+
+.conversation-list::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
+/* Toggle button */
+.sidebar-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 0;  /* stays on the left edge of the screen */
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, #00ADB5, #007D8F);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  transition: left 0.3s ease;
+}
+
+.conversation-sidebar.visible + .sidebar-toggle {
+  left: 240px; /* same as sidebar width */
+}
+
+/* ===== Responsive (Mobile) ===== */
+@media (max-width: 768px) {
+  .conversation-list-container {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .conversation-item {
+    min-width: 140px;
+    text-align: center;
+  }
+
+  .new-chat-btn {
+    width: 100%;
+  }
+}

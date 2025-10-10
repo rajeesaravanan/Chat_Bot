@@ -15,13 +15,12 @@ export const registerService = async ({ username, email, password }) => {
 export const loginService = async ({ email, password })=> {
     const user = await User.findOne({ email })
     if(!user) throw new Error("User not found")
-
+    
         const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch) throw new Error ("Invalid password")
 
             const token = generateToken(user._id); 
   return { username: user.username, message: "Login successful", token };
 };
-
 
 export default { registerService, loginService }

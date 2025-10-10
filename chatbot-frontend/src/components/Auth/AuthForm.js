@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+import { login, register } from "../../api/authApi"; // using centralized API
+import "./AuthForm.css";
 
 const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,17 +16,13 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
     setLoading(true);
     try {
       if (isLogin) {
-        const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
-        localStorage.setItem("token", res.data.token);
-        if (res.data.username) {
-          localStorage.setItem("username", res.data.username);
-        }
+        const res = await login(email, password);
+        localStorage.setItem("token", res.token);
+        if (res.username) localStorage.setItem("username", res.username);
         onLoginSuccess();
         onClose();
-
       } else {
-        await axios.post(`${API_URL}/api/auth/register`, { username, email, password });
-        // After successful register, switch to login
+        await register(username, email, password);
         setIsLogin(true);
         setError("Registered successfully. Please log in.");
       }

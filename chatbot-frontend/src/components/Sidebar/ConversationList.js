@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getConversations } from "../../api/conversationApi"; 
 import "./ConversationList.css";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 const ConversationList = ({ onSelectConversation, onNewChat, currentConversation }) => {
   const [conversations, setConversations] = useState([]);
 
+  // Fetch conversations from API
   const fetchConversations = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_URL}/api/conversations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setConversations(res.data.conversations || []);
+      if (!token) return;
+      const data = await getConversations(token);
+      setConversations(data || []);
     } catch (err) {
       console.error("Failed to fetch conversations:", err);
     }
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) fetchConversations();
+    fetchConversations();
   }, []);
 
   const handleSelect = (conversation) => {
@@ -29,7 +27,7 @@ const ConversationList = ({ onSelectConversation, onNewChat, currentConversation
 
   const handleNewChatClick = async () => {
     await onNewChat();
-    fetchConversations(); // refresh list after creating new chat
+    fetchConversations(); // refresh after creating new chat
   };
 
   return (
