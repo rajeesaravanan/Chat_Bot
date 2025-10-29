@@ -58,10 +58,20 @@ export const deleteConversationService = async (userId, id) => {
     return Conversation.findOneAndDelete({ _id: id, userId: userId})
 }
 
+export const updateConversationTitleService = async (userId, id, newTitle) => {
+  return Conversation.findOneAndUpdate(
+    { _id: id, userId }, 
+    { title: newTitle , updatedAt: Date.now() },
+    { new: true }
+
+  )
+}
+
 export default {
     saveConversationService,
     getConversationService,
     getConversationByIdService,
     createConversationService,
-    deleteConversationService 
+    deleteConversationService,
+    updateConversationTitleService
 }

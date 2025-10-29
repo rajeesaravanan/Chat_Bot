@@ -3,8 +3,15 @@ import AuthForm from "../Auth/AuthForm";
 import ConversationList from "../Sidebar/ConversationList";
 import LogoutConfirmModal from "../Modals/LogoutConfirmModal";
 import { sendMessageApi } from "../../api/chatApi";
-import { getConversations, newConversationApi, getConversationById } from "../../api/conversationApi";
+import {
+  getConversations,
+  newConversationApi,
+  getConversationById,
+} from "../../api/conversationApi";
 import "./Chat.css";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -12,14 +19,17 @@ const Chat = () => {
   const [isChatStarted, setIsChatStarted] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [username, setUsername] = useState(localStorage.getItem("username") || "");
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentConversation, setCurrentConversation] = useState(null);
   const [conversations, setConversations] = useState([]);
 
   const messagesEndRef = useRef(null);
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = () =>
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
   useEffect(scrollToBottom, [messages]);
 
@@ -53,18 +63,21 @@ const Chat = () => {
     if (!isChatStarted) setIsChatStarted(true);
 
     const userMessage = { role: "user", content: input };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    const loadingMessage = { role: "assistant", content: " ✨ AMI is typing..." };
-    setMessages(prev => [...prev, loadingMessage]);
+    const loadingMessage = {
+      role: "assistant",
+      content: " ✨ AMI is typing...",
+    };
+    setMessages((prev) => [...prev, loadingMessage]);
 
     try {
       const token = localStorage.getItem("token");
       const res = await sendMessageApi(input, currentConversation?._id, token);
 
-      setMessages(prev =>
-        prev.map(msg =>
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.content === " ✨ AMI is typing..."
             ? { role: "assistant", content: res.answer }
             : msg
@@ -72,17 +85,16 @@ const Chat = () => {
       );
 
       if (res.conversationId) {
-  setCurrentConversation(prev => ({
-    ...(prev || {}),
-    _id: res.conversationId,
-    title: res.conversationTitle || (prev?.title || "New Chat")
-  }));
-  fetchConversations(); // refresh sidebar list
-}
-
+        setCurrentConversation((prev) => ({
+          ...(prev || {}),
+          _id: res.conversationId,
+          title: res.conversationTitle || prev?.title || "New Chat",
+        }));
+        fetchConversations();
+      }
     } catch (err) {
-      setMessages(prev =>
-        prev.map(msg =>
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.content === " ✨ AMI is typing..."
             ? { role: "assistant", content: "Oops! Something went wrong." }
             : msg
@@ -91,14 +103,16 @@ const Chat = () => {
     }
   };
 
-  const handleKeyPress = (e) => { if (e.key === "Enter" && !showAuth) handleSendMessage(); };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !showAuth) handleSendMessage();
+  };
   const toggleSidebar = () => {
-  if (!isLoggedIn) {
-    setShowAuth(true);
-    return;
-  }
-  setShowSidebar(prev => !prev);
-};
+    if (!isLoggedIn) {
+      setShowAuth(true);
+      return;
+    }
+    setShowSidebar((prev) => !prev);
+  };
 
   const handleNewChat = async () => {
     if (!isLoggedIn) return;
@@ -133,10 +147,10 @@ const Chat = () => {
     setIsLoggedIn(false);
     setUsername("");
 
-     setMessages([]);
-  setInput("");
-  setIsChatStarted(false);
-  setCurrentConversation(null);
+    setMessages([]);
+    setInput("");
+    setIsChatStarted(false);
+    setCurrentConversation(null);
 
     setIsLogoutModalOpen(false);
   };
@@ -162,34 +176,58 @@ const Chat = () => {
         <div className="bot-name">AMI ✨</div>
         <div className="auth-controls">
           {isLoggedIn ? (
-            <button className="auth-btn" onClick={logout}>Logout</button>
+            <button className="auth-btn" onClick={logout}>
+              Logout
+            </button>
           ) : (
-            <button className="auth-btn" onClick={() => setShowAuth(true)}>Login / Register</button>
+            <button className="auth-btn" onClick={() => setShowAuth(true)}>
+              Login / Register
+            </button>
           )}
         </div>
       </div>
 
       <div className={`chat-greeting ${isChatStarted ? "hidden" : ""}`}>
-        {isLoggedIn && username ? `Hello ${username}!! How can I help you?` : "How can I help you?"}
+        {isLoggedIn && username
+          ? `Hello ${username}!! How can I help you?`
+          : "How can I help you?"}
       </div>
 
       <div className="chat-box">
-        <div className={`chat-messages ${isChatStarted ? "chat-active" : "chat-inactive"}`}>
+        <div
+          className={`chat-messages ${
+            isChatStarted ? "chat-active" : "chat-inactive"
+          }`}
+        >
           {messages.map((msg, i) => (
-            <div 
-  key={i} 
-  className={`chat-message ${msg.role}`} 
-  dangerouslySetInnerHTML={{ __html: msg.content }} 
-></div>
+            <div
+              key={`${i}-${msg.content.length}`}
+              className={`chat-message ${msg.role}`}
+            >
+              <div className="ai-markdown-content">
+                <ReactMarkdown
+                  key={`${i}-${msg.content.length}`}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {msg.content}
+                </ReactMarkdown>
+              </div>
+            </div>
           ))}
+
           <div ref={messagesEndRef} />
         </div>
 
-        <div className={`chat-input-container ${isChatStarted ? "bottom" : "center"}`}>
+        <div
+          className={`chat-input-container ${
+            isChatStarted ? "bottom" : "center"
+          }`}
+        >
           <input
             type="text"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask Ami..."
           />

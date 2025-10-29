@@ -1,0 +1,32 @@
+.conversation-menu {
+  position: absolute;
+  right: 10px;
+  top: 30px;
+  background: #2e2e2e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  width: 120px;
+  overflow: hidden;
+}
+
+.menu-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #eee;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menu-item:hover {
+  background: #3a3a3a;
+}
+
+.menu-item.delete {
+  color: #ff7777;
+}
+
+.menu-item.delete:hover {
+  background: #552222;
+}

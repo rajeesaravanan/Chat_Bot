@@ -29,6 +29,7 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong");
     } finally {
+      
       setLoading(false);
     }
   };

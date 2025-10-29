@@ -2,7 +2,8 @@ import {
   getConversationService,
   getConversationByIdService,
   createConversationService,
-  deleteConversationService
+  deleteConversationService,
+  updateConversationTitleService
 } from "../services/conversationService.js";
 
 export const getConversations = async (req, res) => {
@@ -52,9 +53,29 @@ export const deleteConversation = async (req, res) => {
 };
 
 
+export const updateConversationTitle = async (req, res) => {
+  try {
+    const { newTitle } = req.body 
+    if(!newTitle || newTitle.trim() === "" ){
+      return res.status(400).json({ error: "New title is required"})
+    }
+
+    const updated = await updateConversationTitleService(req.userId, req.params.id, newTitle)
+    if(!updated) return res.status(404).json({ error: "Conversation not found"})
+
+      res.json({ message: " Conversation renamed successfully", conversation: updated})
+  }catch(err){
+    console.error(err)
+    res.status(500).json({error: 'Failed to update conversation title'})
+  }
+   
+}
+
+
 export default { 
     getConversations,
     getConversationById,
     createConversation,
-    deleteConversation
+    deleteConversation,
+    updateConversationTitle
 }

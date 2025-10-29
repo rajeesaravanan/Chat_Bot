@@ -1,4 +1,9 @@
 import React, { useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
+
 import "./Chat.css";
 
 const ChatMessages = ({ messages }) => {
@@ -12,15 +17,39 @@ const ChatMessages = ({ messages }) => {
 
   return (
     <div className={`chat-messages ${messages.length > 0 ? "chat-active" : "chat-inactive"}`}>
-      {messages.map((msg, i) => (
-        <div 
-  key={i} 
-  className={`chat-message ${msg.role}`} 
-  dangerouslySetInnerHTML={{ __html: msg.content }} 
->
-          {msg.content}
+      {/* {messages.map((msg, i) => (
+        <div key={i} className={`chat-message ${msg.role}`}>
+          {msg.content.includes("<") ? (
+            <div className="ai-markdown-content">
+              <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                {msg.content}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="ai-markdown-content">
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
+            </div>
+          )}
         </div>
-      ))}
+      ))} */}
+
+      {messages.map((msg, i) => (
+  <div key={`${i}-${msg.content.length}`} className={`chat-message ${msg.role}`}>
+    <div className="ai-markdown-content">
+      <ReactMarkdown
+        key={`${i}-${msg.content.length}`}
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+      >
+        {msg.content}
+      </ReactMarkdown>
+    </div>
+  </div>
+))}
+
+
+
+
       <div ref={messagesEndRef} />
     </div>
   );
