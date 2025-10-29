@@ -27,6 +27,9 @@ export const saveConversationService = async (userId, conversationId, userMsg, b
       await newConversation.save();
       return { id: newConversation._id, title: newConversation.title };
     }
+
+
+    
   } catch (err) {
     console.error("Failed to save conversation:", err);
     return { id: conversationId || null, title: "New Chat" };

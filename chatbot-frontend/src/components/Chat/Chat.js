@@ -59,49 +59,48 @@ const Chat = () => {
   }, []);
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
-    if (!isChatStarted) setIsChatStarted(true);
+  if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+  const userMessage = { role: "user", content: input };
+  const typingMessage = { role: "assistant", content: "✨ AMI is typing..." };
+  const token = localStorage.getItem("token");
 
-    const loadingMessage = {
-      role: "assistant",
-      content: " ✨ AMI is typing...",
-    };
-    setMessages((prev) => [...prev, loadingMessage]);
+  setMessages((prev) => [...prev, userMessage, typingMessage]);
+  setInput("");
+  setIsChatStarted(true);
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await sendMessageApi(input, currentConversation?._id, token);
+  try {
+    const res = await sendMessageApi(input, currentConversation?._id, token);
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.content === " ✨ AMI is typing..."
-            ? { role: "assistant", content: res.answer }
-            : msg
-        )
+    setMessages((prev) => {
+      const updated = prev.map((msg) =>
+        msg.content === "✨ AMI is typing..."
+          ? { role: "assistant", content: res.answer }
+          : msg
       );
+      setTimeout(scrollToBottom, 50);
+      return updated;
+    });
 
-      if (res.conversationId) {
-        setCurrentConversation((prev) => ({
-          ...(prev || {}),
-          _id: res.conversationId,
-          title: res.conversationTitle || prev?.title || "New Chat",
-        }));
-        fetchConversations();
-      }
-    } catch (err) {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.content === " ✨ AMI is typing..."
-            ? { role: "assistant", content: "Oops! Something went wrong." }
-            : msg
-        )
-      );
+    if (res.conversationId) {
+      setCurrentConversation((prev) => ({
+        ...(prev || {}),
+        _id: res.conversationId,
+        title: res.conversationTitle || prev?.title || "New Chat",
+      }));
+      fetchConversations();
     }
-  };
+  } catch (err) {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.content === "✨ AMI is typing..."
+          ? { role: "assistant", content: "Oops! Something went wrong." }
+          : msg
+      )
+    );
+  }
+};
+
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !showAuth) handleSendMessage();
@@ -201,12 +200,12 @@ const Chat = () => {
         >
           {messages.map((msg, i) => (
             <div
-              key={`${i}-${msg.content.length}`}
+              key={`${msg.role}-${i}-${msg.content.slice(0, 10)}`}
               className={`chat-message ${msg.role}`}
             >
               <div className="ai-markdown-content">
                 <ReactMarkdown
-                  key={`${i}-${msg.content.length}`}
+                  key={`${msg.role}-${i}-${msg.content.slice(0, 10)}`}
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
                 >

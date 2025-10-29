@@ -62,20 +62,10 @@ export const chatController = async (req, res) => {
     // const formattedAnswer = answer.replace(/\n/g, "<br>");
 
     let formattedAnswer = answer
-      // Remove markdown bold/headers/code symbols
-      .replace(/(\*\*|__|##|###|```[\s\S]*?```|`)/g, "")
-      // Convert bullet points to <li>
-      .replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>")
-      // Convert numbered lists to <li>
-      .replace(/^\s*\d+\.\s+(.*)$/gm, "<li>$1</li>")
-      // Wrap all consecutive <li> in <ul>
-      .replace(/(<li>.*<\/li>)/g, "<ul>$1</ul>")
-      // Convert double newlines to paragraph breaks
-      .replace(/\n\s*\n/g, "<br><br>")
-      // Convert single newlines to <br>
-      .replace(/\n/g, "<br>")
-      // Trim extra spaces
-      .trim();
+  .replace(/\s*\n*\s*(\d+\.)/g, "\n$1")   // fix numbered list formatting
+  .replace(/\s*\n*\s*(-)/g, "\n$1")       // fix bullet formatting
+  .replace(/\n{3,}/g, "\n\n")             // collapse extra line breaks
+  .trim();
 
     res.json({
       answer: formattedAnswer,

@@ -19,7 +19,7 @@ html, body {
   min-height: 100vh;
   overflow: visible;
   position: relative;
-  background: #222831;
+  background: #0b0d10;
   display: flex;
 }
 
@@ -32,7 +32,7 @@ html, body {
 .chat-greeting {
   position: absolute;
   top: 30%;
-  left: 50%;
+  left: 54%;
   transform: translate(-50%, -50%);
   font-size: 36px;
   font-weight: bold;
@@ -61,15 +61,25 @@ html, body {
 .chat-box {
   position: absolute;
   top: 80px;
-  left: 50%;
+  left: 55%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 1000px;
-  height: calc(100% - 120px);
+  height: calc(100% - 80px);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
   background: transparent;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .chat-messages.chat-active {
@@ -91,8 +101,8 @@ html, body {
 /* ================== Message bubbles ================== */
 .chat-message {
   max-width: 950px;
-  padding: 14px 20px;
-  border-radius: 20px;
+  padding: 4px 10px;
+  border-radius: 216px;
   font-size: 16px;
   line-height: 2;
   word-wrap: break-word;
@@ -107,21 +117,23 @@ html, body {
   border-bottom-right-radius: 6px;
 }
 
+
 .chat-message.assistant {
   align-self: flex-start;
-  color: #FFFFFF;
-  border-bottom-left-radius: 6px;
-  /* background: #f1f1f1; */
-  color: #FFFFFF;
-  padding: 10px;
-  border-radius: 8px;
-  white-space: pre-wrap;
-  line-height: 1.5;
+  /* background: #2a2f3a; */
+  color: #f1f1f1;
+  padding: 18px 22px;
+  border-radius: 16px;
+  max-width: 850px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.7;
+  font-size: 11px;
 }
 
 .chat-message.assistant code {
   display: block;
-  background: #2d2d2d;
+  background: #232d27;
   /* color: #f8f8f2; */
   padding: 10px;
   border-radius: 6px;
@@ -137,7 +149,7 @@ html, body {
 
 /* ================== Input ================== */
 .chat-input-container {
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
@@ -147,6 +159,8 @@ html, body {
   gap: 10px;
   transition: all 0.5s ease;
   z-index: 10;
+  margin-top: 10px;
+  /* border-top: 1px solid #333; */
 }
 
 .chat-input-container.center {
@@ -163,7 +177,7 @@ html, body {
 
 .chat-input-container input {
   flex: 1;
-  padding: 25px 35px;
+  padding: 15px 25px;
   border-radius: 30px;
   border: 2px solid #555;
   outline: none;
@@ -282,31 +296,18 @@ html, body {
 
 
 /* ===== AI Message Formatting ===== */
-/* ================== Improved AI Message Formatting (ChatGPT Style) ================== */
-.chat-message.assistant {
-  align-self: flex-start;
-  background: #2a2f3a;
-  color: #f1f1f1;
-  padding: 18px 22px;
-  border-radius: 16px;
-  max-width: 850px;
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.7;
-  font-size: 15.5px;
-}
 
 /* Markdown styling inside AI message */
 .ai-markdown-content {
-  font-size: 15.5px;
+  background: none;
+  color: #f1f1f1;
+  font-size: 13.8px;
   line-height: 1.7;
-  color: #f5f5f5;
   word-wrap: break-word;
   white-space: normal;
 }
-
 .ai-markdown-content p {
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .ai-markdown-content h1,
@@ -327,7 +328,7 @@ html, body {
 .ai-markdown-content ul,
 .ai-markdown-content ol {
   margin: 10px 0 10px 25px;
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 .ai-markdown-content li {
@@ -344,11 +345,16 @@ html, body {
 }
 
 .ai-markdown-content pre code {
-  display: block;
+  background: #1e1f22;      /* Optional: subtle dark box for code blocks */
+  border-radius: 6px;
   padding: 12px;
-  overflow-x: auto;
-  border-radius: 8px;
-  line-height: 1.6;
+  color: #00ffcc;
+}
+
+.ai-markdown-content code {
+  background: none;          /* Inline code: no box */
+  color: #00ffcc;
+  padding: 0;
 }
 
 /* Prevent broken word wrapping */
