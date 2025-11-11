@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { login, register } from "../../api/authApi"; 
 import "./AuthForm.css";
+import GoogleLoginButton from "../GoogleLoginButton";
 
 const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -35,57 +36,73 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>{isLogin ? "Login" : "Register"}</h2>
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
-          </button>
-          {error && <p className="error">{error}</p>}
-        </form>
+  <div className="auth-container">
+    <div className="auth-card">
+      <h2>{isLogin ? "Login" : "Register"}</h2>
+
+      <form onSubmit={handleSubmit} className="auth-form">
+  {!isLogin && (
+    <input
+      type="text"
+      placeholder="Username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+    />
+  )}
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    required
+  />
+  <input
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+
+  <div className="login-buttons-wrapper">
+    <button type="submit" disabled={loading}>
+      {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
+    </button>
+
+    {/* ✅ Google login button shown in both login and register */}
+    <GoogleLoginButton onLoginSuccess={onLoginSuccess} />
+  </div>
+
+  {error && <p className="error">{error}</p>}
+</form>
 
 
 
-        <div className="auth-footer">
-          <button
-            className="link-btn"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError("");
-            }}
-          >
-            {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-          </button>
+     
 
-          <button className="link-btn" onClick={onClose}>Close</button>
-        </div>
+      <div className="auth-footer">
+        <button
+          className="link-btn"
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError("");
+          }}
+        >
+          {isLogin
+            ? "Don't have an account? Register"
+            : "Already have an account? Login"}
+        </button>
+
+        <button className="link-btn" onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
-  );
-};
+  </div>
+);
+
+
+}
 
 export default AuthForm;

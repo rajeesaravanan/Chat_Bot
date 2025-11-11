@@ -12,19 +12,18 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     password: {
-        type: String,
-        required: function() {
-    return this.authType === "M"; 
-  }
-    },
-    authType: {
-        type: String,
-        enum: ['M', 'G'],
-        default: 'M'
-    }
+  type: String,
+  required: function() {
+    return this.registrationType !== "Google";
+  },
+  default: ""
+},
+registrationType: {
+  type: String,
+  enum: ["Manual", "Google"]
+}
 
-
-}, { timestamps: true })
+})
 
 const User = mongoose.model("User", userSchema)
 

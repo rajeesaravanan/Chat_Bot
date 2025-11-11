@@ -13,4 +13,5 @@ export const register = async (username, email, password) => {
   return res.data;
 };
 
-
+export const googleLogin = (credential) =>
+  axios.post(`${API_URL}/api/auth/google`, { credential }).then(res => res.data);
