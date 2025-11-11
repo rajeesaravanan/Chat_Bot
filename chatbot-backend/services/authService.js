@@ -11,11 +11,10 @@ import {
 } from "../validators/validator.js";
 
 export const registerService = async ({ username, email, password }) => {
-  if (!validateUsername(username))
-    throw new Error("Username must be 3-20 characters long");
-  if (!validateEmail(email)) throw new Error("Invalid email address");
-  if (!validatePassword(password))
-    throw new Error("Password must be at least 6 characters long");
+  
+    if (!validateUsername(username)) throw new Error("Username must be 3-20 characters long");
+    if (!validateEmail(email)) throw new Error("Invalid email address");
+    if (!validatePassword(password)) throw new Error("Password must be at least 6 characters long");
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = new User({ username, email, password: hashedPassword });

@@ -167,22 +167,23 @@ padding: 0 500px;
 }
 
 
-
-
-
 .login-buttons-wrapper {
   display: flex;
-  justify-content: center; /* center horizontally */
-  gap: 10px;               /* space between normal login and Google button */
+  justify-content: center;
+  gap: 10px;              
   margin-top: 10px;
 }
 
-/* .login-buttons-wrapper button {
-  flex: 1; /* optional: make normal login button stretch a bit */
+
 
 
 .google-button-wrapper {
   display: flex;
   align-items: center;
-  margin-top: 11px     /* vertically align button with login */
+  margin-top: 11px    
+}
+
+input.invalid {
+  border: 2px solid red;
+  background-color: #ffe6e6;
 }

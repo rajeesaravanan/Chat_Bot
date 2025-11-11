@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { login, register } from "../../api/authApi"; 
-import "./AuthForm.css";
 import GoogleLoginButton from "../GoogleLoginButton";
+import { validateEmail, validatePassword, validateUsername } from "../../utils/validator";
+import "./AuthForm.css";
 
 const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,9 +12,18 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Track invalid fields
+  const [touched, setTouched] = useState({ email: false, username: false, password: false });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Frontend validation
+    if (!validateEmail(email)) return setError("Invalid email address");
+    if (!validatePassword(password)) return setError("Password must be at least 6 characters");
+    if (!isLogin && !validateUsername(username)) return setError("Username must be 3-20 characters");
+
     setLoading(true);
     try {
       if (isLogin) {
@@ -30,79 +40,84 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong");
     } finally {
-      
       setLoading(false);
     }
   };
 
+  const inputClass = (field) => {
+    if (!touched[field]) return "";
+    switch (field) {
+      case "email": return validateEmail(email) ? "" : "invalid";
+      case "password": return validatePassword(password) ? "" : "invalid";
+      case "username": return validateUsername(username) ? "" : "invalid";
+      default: return "";
+    }
+  };
+
   return (
-  <div className="auth-container">
-    <div className="auth-card">
-      <h2>{isLogin ? "Login" : "Register"}</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>{isLogin ? "Login" : "Register"}</h2>
 
-      <form onSubmit={handleSubmit} className="auth-form">
-  {!isLogin && (
-    <input
-      type="text"
-      placeholder="Username"
-      value={username}
-      onChange={(e) => setUsername(e.target.value)}
-      required
-    />
-  )}
-  <input
-    type="email"
-    placeholder="Email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    required
-  />
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-  />
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onBlur={() => setTouched({ ...touched, username: true })}
+              className={inputClass("username")}
+              required
+            />
+          )}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setTouched({ ...touched, email: true })}
+            className={inputClass("email")}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onBlur={() => setTouched({ ...touched, password: true })}
+            className={inputClass("password")}
+            required
+          />
 
-  <div className="login-buttons-wrapper">
-    <button type="submit" disabled={loading}>
-      {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
-    </button>
+          <div className="login-buttons-wrapper">
+            <button type="submit" disabled={loading}>
+              {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
+            </button>
+            <GoogleLoginButton onLoginSuccess={onLoginSuccess} />
+          </div>
 
-    {/* ✅ Google login button shown in both login and register */}
-    <GoogleLoginButton onLoginSuccess={onLoginSuccess} />
-  </div>
+          {error && <p className="error">{error}</p>}
+        </form>
 
-  {error && <p className="error">{error}</p>}
-</form>
+        <div className="auth-footer">
+          <button
+            className="link-btn"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError("");
+            }}
+          >
+            {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+          </button>
 
-
-
-     
-
-      <div className="auth-footer">
-        <button
-          className="link-btn"
-          onClick={() => {
-            setIsLogin(!isLogin);
-            setError("");
-          }}
-        >
-          {isLogin
-            ? "Don't have an account? Register"
-            : "Already have an account? Login"}
-        </button>
-
-        <button className="link-btn" onClick={onClose}>
-          Close
-        </button>
+          <button className="link-btn" onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
-
-
-}
+  );
+};
 
 export default AuthForm;
