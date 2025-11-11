@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login, register } from "../../api/authApi"; // using centralized API
+import { login, register } from "../../api/authApi"; 
 import "./AuthForm.css";
 
 const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
@@ -67,6 +67,8 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
           </button>
           {error && <p className="error">{error}</p>}
         </form>
+
+
 
         <div className="auth-footer">
           <button

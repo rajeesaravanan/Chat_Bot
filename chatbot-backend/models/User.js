@@ -13,10 +13,18 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: function() {
+    return this.authType === "M"; 
+  }
+    },
+    authType: {
+        type: String,
+        enum: ['M', 'G'],
+        default: 'M'
     }
 
-})
+
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema)
 

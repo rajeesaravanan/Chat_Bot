@@ -10,6 +10,8 @@
   align-items: center;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.4);
+  
+padding: 0 500px;
 }
 
 /* ===== Right corner auth buttons ===== */
@@ -46,6 +48,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
 }
 
 .auth-modal-backdrop {
@@ -69,7 +72,7 @@
 /* ===== CARD ===== */
 .auth-card {
   background: #222831;
-  padding: 30px 35px;
+  padding: 20px 16px;
   border-radius: 12px;
   color: #eeeeee;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
@@ -86,7 +89,7 @@
 
 /* ===== INPUTS ===== */
 .auth-card input {
-  width: 100%;
+  width: 80%;
   margin: 10px 0;
   padding: 12px 14px;
   border-radius: 8px;
@@ -104,7 +107,7 @@
 
 /* ===== BUTTON ===== */
 .auth-card button {
-  width: 100%;
+  width: 40%;
   padding: 12px;
   margin-top: 12px;
   border-radius: 8px;
@@ -118,23 +121,35 @@
 
 .auth-card button:hover {
   transform: scale(1.03);
-  background: linear-gradient(135deg, #00c2d1, #009fb1);
+   text-decoration: none;
+  color: #89cfff;
 }
 
 /* ===== LINK BUTTONS ===== */
+.auth-footer {
+  display: flex;
+  justify-content: center;
+  gap: 2px; 
+  margin-top: 20px;
+}
+
 .auth-card .link-btn {
-  display: inline-block;
   background: transparent;
   border: none;
   color: #89cfff;
   cursor: pointer;
-  margin-top: 12px;
-  text-align: center;
   font-size: 14px;
+  margin: 0;
+  padding: 0;
+
+}
+.auth-footer .link-btn:first-child {
+  margin-left: 60px;
 }
 
 .auth-card .link-btn:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  color: #89cfff; /* no hover effect */
 }
 
 /* ===== ERROR MESSAGE ===== */
@@ -150,3 +165,5 @@
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
+
