@@ -10,8 +10,7 @@
   align-items: center;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.4);
-  
-padding: 0 500px;
+  padding: 0 500px;
 }
 
 /* ===== Right corner auth buttons ===== */
@@ -48,7 +47,6 @@ padding: 0 500px;
   display: flex;
   align-items: center;
   justify-content: center;
-  
 }
 
 .auth-modal-backdrop {
@@ -66,7 +64,6 @@ padding: 0 500px;
   margin: 20px;
   border-radius: 14px;
   overflow: hidden;
-  
 }
 
 /* ===== CARD ===== */
@@ -78,6 +75,12 @@ padding: 0 500px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   animation: fadeIn 0.25s ease-in-out;
   text-align: center;
+
+  /* Stable width fix */
+  width: 380px;
+  max-width: 90%;
+  box-sizing: border-box;
+  transition: all 0.25s ease-in-out;
 }
 
 .auth-card h2 {
@@ -89,7 +92,7 @@ padding: 0 500px;
 
 /* ===== INPUTS ===== */
 .auth-card input {
-  width: 80%;
+  width: 100%;
   margin: 10px 0;
   padding: 12px 14px;
   border-radius: 8px;
@@ -97,6 +100,7 @@ padding: 0 500px;
   border: 1px solid #444;
   color: #eee;
   font-size: 15px;
+  box-sizing: border-box;
 }
 
 .auth-card input:focus {
@@ -121,7 +125,7 @@ padding: 0 500px;
 
 .auth-card button:hover {
   transform: scale(1.03);
-   text-decoration: none;
+  text-decoration: none;
   color: #89cfff;
 }
 
@@ -129,8 +133,9 @@ padding: 0 500px;
 .auth-footer {
   display: flex;
   justify-content: center;
-  gap: 2px; 
+  gap: 2px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .auth-card .link-btn {
@@ -141,23 +146,28 @@ padding: 0 500px;
   font-size: 14px;
   margin: 0;
   padding: 0;
-
 }
+
 .auth-footer .link-btn:first-child {
-  margin-left: 60px;
+  margin-left: 35px;
 }
 
 .auth-card .link-btn:hover {
   text-decoration: none;
-  color: #89cfff; /* no hover effect */
+  color: #89cfff;
 }
 
 /* ===== ERROR MESSAGE ===== */
-.auth-card .error {
-  color: #ff6b6b;
-  margin-top: 8px;
-  font-size: 14px;
-  text-align: center;
+.field-error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  min-height: 18px; /* Prevent card from resizing vertically */
+  text-align: left;
+  width: 100%;
+  padding-left: 5px;
+  box-sizing: border-box;
 }
 
 /* ===== ANIMATION ===== */
@@ -166,27 +176,97 @@ padding: 0 500px;
   to { opacity: 1; transform: scale(1); }
 }
 
-
 .login-buttons-wrapper {
   display: flex;
   justify-content: center;
-  gap: 10px;              
+  gap: 10px;
   margin-top: 10px;
 }
-
-
-
 
 .google-button-wrapper {
   display: flex;
   align-items: center;
-  margin-top: 11px    
+  margin-top: 11px;
 }
 
-.field-error {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-  margin-bottom: 8px;
+/* =============================
+   RESPONSIVE DESIGN
+   ============================= */
+
+@media (max-width: 1024px) {
+  .auth-container {
+    padding: 0 200px;
+  }
 }
 
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 0 50px;
+  }
+
+  .auth-card {
+    width: 320px;
+    padding: 18px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .auth-card input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .auth-card button {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .login-buttons-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .auth-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .auth-footer .link-btn:first-child {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 0 20px;
+  }
+
+  .auth-card {
+    width: 90%;
+    padding: 14px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .auth-card input {
+    font-size: 13px;
+  }
+
+  .auth-card button {
+    width: 100%;
+  }
+
+  .login-buttons-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .auth-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

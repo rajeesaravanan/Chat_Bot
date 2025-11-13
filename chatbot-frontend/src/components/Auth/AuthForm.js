@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { login, register } from "../../api/authApi"; 
+import { login, register } from "../../api/authApi";
 import GoogleLoginButton from "../GoogleLoginButton";
-import { validateEmail, validatePassword, validateUsername } from "../../utils/validator";
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "../../utils/validator";
 import "./AuthForm.css";
 
 const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
@@ -11,20 +15,35 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Track errors per field
-  const [errors, setErrors] = useState({ email: "", username: "", password: "" });
+  const [errors, setErrors] = useState({
+    email: "",
+    username: "",
+    password: "",
+  });
 
-  // Validate a single field
   const validateField = (field, value) => {
     switch (field) {
       case "email":
-        setErrors((prev) => ({ ...prev, email: validateEmail(value) ? "" : "Invalid email address" }));
+        setErrors((prev) => ({
+          ...prev,
+          email: validateEmail(value) ? "" : "Invalid email address",
+        }));
         break;
       case "password":
-        setErrors((prev) => ({ ...prev, password: validatePassword(value) ? "" : "Password must be at least 6 characters" }));
+        setErrors((prev) => ({
+          ...prev,
+          password: validatePassword(value)
+            ? ""
+            : "Password must be at least 6 characters",
+        }));
         break;
       case "username":
-        setErrors((prev) => ({ ...prev, username: validateUsername(value) ? "" : "Username must be 3-20 characters" }));
+        setErrors((prev) => ({
+          ...prev,
+          username: validateUsername(value)
+            ? ""
+            : "Username must be 3-20 characters",
+        }));
         break;
       default:
         break;
@@ -34,10 +53,18 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check all fields before submitting
-    if (!validateEmail(email)) return setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
-    if (!validatePassword(password)) return setErrors((prev) => ({ ...prev, password: "Password must be at least 6 characters" }));
-    if (!isLogin && !validateUsername(username)) return setErrors((prev) => ({ ...prev, username: "Username must be 3-20 characters" }));
+    if (!validateEmail(email))
+      return setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
+    if (!validatePassword(password))
+      return setErrors((prev) => ({
+        ...prev,
+        password: "Password must be at least 6 characters",
+      }));
+    if (!isLogin && !validateUsername(username))
+      return setErrors((prev) => ({
+        ...prev,
+        username: "Username must be 3-20 characters",
+      }));
 
     setLoading(true);
     try {
@@ -53,7 +80,10 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
         setErrors({ email: "", username: "", password: "" });
       }
     } catch (err) {
-      setErrors((prev) => ({ ...prev, email: err.response?.data?.error || "Something went wrong" }));
+      setErrors((prev) => ({
+        ...prev,
+        email: err.response?.data?.error || "Something went wrong",
+      }));
     } finally {
       setLoading(false);
     }
@@ -74,7 +104,9 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
                 onChange={(e) => setUsername(e.target.value)}
                 onBlur={() => validateField("username", username)}
               />
-              {errors.username && <p className="field-error">{errors.username}</p>}
+              {errors.username && (
+                <p className="field-error">{errors.username}</p>
+              )}
             </>
           )}
 
@@ -108,17 +140,21 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
           <button
             className="link-btn"
             onClick={() => {
-    setIsLogin(!isLogin);
-    setErrors({ email: "", username: "", password: "" }); 
-    setEmail("");    
-    setUsername(""); 
-    setPassword(""); 
-  }}
+              setIsLogin(!isLogin);
+              setErrors({ email: "", username: "", password: "" });
+              setEmail("");
+              setUsername("");
+              setPassword("");
+            }}
           >
-            {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+            {isLogin
+              ? "Don't have an account? Register"
+              : "Already have an account? Login"}
           </button>
 
-          <button className="link-btn" onClick={onClose}>Close</button>
+          <button className="link-btn" onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     </div>
