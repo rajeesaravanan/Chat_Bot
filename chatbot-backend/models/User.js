@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
 },
 registrationType: {
   type: String,
-  enum: ["Manual", "Google"]
+  enum: ["Manual", "Google"],
+  default: "Manual"
 }
 
 })

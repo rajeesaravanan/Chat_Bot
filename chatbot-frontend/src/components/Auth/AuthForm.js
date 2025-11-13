@@ -9,20 +9,35 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Track invalid fields
-  const [touched, setTouched] = useState({ email: false, username: false, password: false });
+  // Track errors per field
+  const [errors, setErrors] = useState({ email: "", username: "", password: "" });
+
+  // Validate a single field
+  const validateField = (field, value) => {
+    switch (field) {
+      case "email":
+        setErrors((prev) => ({ ...prev, email: validateEmail(value) ? "" : "Invalid email address" }));
+        break;
+      case "password":
+        setErrors((prev) => ({ ...prev, password: validatePassword(value) ? "" : "Password must be at least 6 characters" }));
+        break;
+      case "username":
+        setErrors((prev) => ({ ...prev, username: validateUsername(value) ? "" : "Username must be 3-20 characters" }));
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    // Frontend validation
-    if (!validateEmail(email)) return setError("Invalid email address");
-    if (!validatePassword(password)) return setError("Password must be at least 6 characters");
-    if (!isLogin && !validateUsername(username)) return setError("Username must be 3-20 characters");
+    // Check all fields before submitting
+    if (!validateEmail(email)) return setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
+    if (!validatePassword(password)) return setErrors((prev) => ({ ...prev, password: "Password must be at least 6 characters" }));
+    if (!isLogin && !validateUsername(username)) return setErrors((prev) => ({ ...prev, username: "Username must be 3-20 characters" }));
 
     setLoading(true);
     try {
@@ -35,22 +50,12 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
       } else {
         await register(username, email, password);
         setIsLogin(true);
-        setError("Registered successfully. Please log in.");
+        setErrors({ email: "", username: "", password: "" });
       }
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong");
+      setErrors((prev) => ({ ...prev, email: err.response?.data?.error || "Something went wrong" }));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const inputClass = (field) => {
-    if (!touched[field]) return "";
-    switch (field) {
-      case "email": return validateEmail(email) ? "" : "invalid";
-      case "password": return validatePassword(password) ? "" : "invalid";
-      case "username": return validateUsername(username) ? "" : "invalid";
-      default: return "";
     }
   };
 
@@ -61,34 +66,35 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              onBlur={() => setTouched({ ...touched, username: true })}
-              className={inputClass("username")}
-              required
-            />
+            <>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                onBlur={() => validateField("username", username)}
+              />
+              {errors.username && <p className="field-error">{errors.username}</p>}
+            </>
           )}
+
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setTouched({ ...touched, email: true })}
-            className={inputClass("email")}
-            required
+            onBlur={() => validateField("email", email)}
           />
+          {errors.email && <p className="field-error">{errors.email}</p>}
+
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onBlur={() => setTouched({ ...touched, password: true })}
-            className={inputClass("password")}
-            required
+            onBlur={() => validateField("password", password)}
           />
+          {errors.password && <p className="field-error">{errors.password}</p>}
 
           <div className="login-buttons-wrapper">
             <button type="submit" disabled={loading}>
@@ -96,24 +102,23 @@ const AuthForm = ({ onLoginSuccess = () => {}, onClose = () => {} }) => {
             </button>
             <GoogleLoginButton onLoginSuccess={onLoginSuccess} />
           </div>
-
-          {error && <p className="error">{error}</p>}
         </form>
 
         <div className="auth-footer">
           <button
             className="link-btn"
             onClick={() => {
-              setIsLogin(!isLogin);
-              setError("");
-            }}
+    setIsLogin(!isLogin);
+    setErrors({ email: "", username: "", password: "" }); 
+    setEmail("");    
+    setUsername(""); 
+    setPassword(""); 
+  }}
           >
             {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
           </button>
 
-          <button className="link-btn" onClick={onClose}>
-            Close
-          </button>
+          <button className="link-btn" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>

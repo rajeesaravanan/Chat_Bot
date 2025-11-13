@@ -183,7 +183,10 @@ padding: 0 500px;
   margin-top: 11px    
 }
 
-input.invalid {
-  border: 2px solid red;
-  background-color: #ffe6e6;
+.field-error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
+
